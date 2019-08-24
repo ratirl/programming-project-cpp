@@ -1,4 +1,5 @@
 #pragma once
+#include "Pakket.h"
 #include <iostream>
 #include <vector>
 #include "string"
@@ -17,6 +18,10 @@ public:
 	string getNaam();
 	double getTotaalCapaciteit();
 	double getBeschikbaarCapaciteit();
+	// zonder id (voor in database te inserten)
 	Voertuig(string naam, double totaalCapaciteit);
+	
+
+
 
 };
