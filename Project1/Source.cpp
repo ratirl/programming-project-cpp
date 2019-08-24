@@ -1,16 +1,36 @@
 #include <iostream>
 #include "Database.h"
+#include "blowfish.h"
 using namespace std;
 using namespace mysqlx;
 
+vector<char> toChar(std::string msg) {
+	vector<char> updated_msg(msg.begin(), msg.end());
+	return updated_msg;
+}
+
+std::string toString(vector<char> msg) {
+	std::string string_data;
+	for (int i = 0; i < msg.size(); i++) {
+		char buff[4];
+		sprintf(buff, "%02x", (unsigned char)msg[i]);
+		string_data += buff;
+	}
+	return string_data;
+}
+
+
 int main()
 {
-	//Session session = Database::getSession();
-	//Schema schema = session.getSchema("1819IP_groep14");
-	//Table table = schema.getTable("RATIRL");
-	//table.insert("id", "name").values(1, "testinput").execute();
 
+	const vector<char> key = { 'A', 'l', 'i','L', '9', 'S','o', 'l', 'o','C', 'a', 'r','r','y' };
+	vector<char> pass = toChar("coolewachtwoord");
+	Blowfish bj = Blowfish(key);
+	std::string hash = toString(bj.Encrypt(pass));
 
-	cout << "Test om te zien of github werkt";
+	Session session = Database::getSession();
+	Schema schema = session.getSchema("1819IP_groep14");
+	Table table = schema.getTable("RATIRL");
+	table.insert("name").values(hash).execute();
 	return 0;
 }
