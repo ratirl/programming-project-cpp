@@ -1,34 +1,33 @@
 #pragma once
-#include <iostream>
 #include <vector>
-#include "string"
-using namespace std;
+#include <iostream>
+#include <string>
 
 class Pakket {
 	//enum Status { magazijn, verwerking, onderweg, geleverd };
 private:
 	int id;
-	string voornaam;
-	string achternaam;
-	string straat;
+	std::string voornaam;
+	std::string achternaam;
+	std::string straat;
 	int huisnummer;
-	string gemeente;
-	string status;
+	std::string gemeente;
+	std::string status;
 	bool prioriteit;
 	double capaciteit;
 
 public:
 	int getId();
-	string getVoornaam();
-	string getAchternaam();
-	string getStraat();
+	std::string getVoornaam();
+	std::string getAchternaam();
+	std::string getStraat();
 	int getHuisnummer();
-	string getGemeente();
-	string getStatus();
+	std::string getGemeente();
+	std::string getStatus();
 	bool getPrioriteit();
 
 	// constructor met alle members (ga ik wss niet gebruiken)
-	Pakket(int id, string voornaam, string achternaam, string straat, int huisnummer, string gemeente, string status, bool prioriteit, double capaciteit);
-	Pakket(string voornaam, string achternaam, string straat, int huisnummer, string gemeente, bool prioriteit, double lengte, double breedte);
+	Pakket(int id, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, std::string status, bool prioriteit, double capaciteit);
+	Pakket(std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, bool prioriteit, double lengte, double breedte);
 
 };

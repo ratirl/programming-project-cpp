@@ -5,17 +5,17 @@ int Pakket::getId()
 	return id;
 }
 
-string Pakket::getVoornaam()
+std::string Pakket::getVoornaam()
 {
 	return voornaam;
 }
 
-string Pakket::getAchternaam()
+std::string Pakket::getAchternaam()
 {
 	return achternaam;
 }
 
-string Pakket::getStraat()
+std::string Pakket::getStraat()
 {
 	return straat;
 }
@@ -25,12 +25,12 @@ int Pakket::getHuisnummer()
 	return huisnummer;
 }
 
-string Pakket::getGemeente()
+std::string Pakket::getGemeente()
 {
 	return gemeente;
 }
 
-string Pakket::getStatus()
+std::string Pakket::getStatus()
 {
 	return status;
 }
@@ -40,7 +40,7 @@ bool Pakket::getPrioriteit()
 	return prioriteit;
 }
 
-Pakket::Pakket(int id, string voornaam, string achternaam, string straat, int huisnummer, string gemeente, string status, bool prioriteit, double capaciteit)
+Pakket::Pakket(int id, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, std::string status, bool prioriteit, double capaciteit)
 {
 	this->id = id;
 	this->voornaam = voornaam;
@@ -53,7 +53,7 @@ Pakket::Pakket(int id, string voornaam, string achternaam, string straat, int hu
 	this->capaciteit = capaciteit;
 }
 
-Pakket::Pakket(string voornaam, string achternaam, string straat, int huisnummer, string gemeente, bool prioriteit, double lengte, double breedte)
+Pakket::Pakket(std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, bool prioriteit, double lengte, double breedte)
 {
 	this->voornaam = voornaam;
 	this->achternaam = achternaam;

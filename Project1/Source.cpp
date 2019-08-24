@@ -1,6 +1,6 @@
 #include <iostream>
-#include "Database.h"
 #include "blowfish.h"
+#include "DatabaseHeaders.h"
 using namespace std;
 using namespace mysqlx;
 
@@ -32,5 +32,10 @@ int main()
 	Schema schema = session.getSchema("1819IP_groep14");
 	Table table = schema.getTable("RATIRL");
 	table.insert("name").values(hash).execute();
+
+	//voertuig toeveogen in database test
+	DatabaseVoertuig db;
+	db.addVoertuig("vrachtwagen", 10);
+
 	return 0;
 }

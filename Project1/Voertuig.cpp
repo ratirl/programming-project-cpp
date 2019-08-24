@@ -5,7 +5,7 @@ int Voertuig::getId()
 	return id;
 }
 
-string Voertuig::getNaam()
+std::string Voertuig::getNaam()
 {
 	return naam;
 }
@@ -20,7 +20,7 @@ double Voertuig::getBeschikbaarCapaciteit()
 	return beschikbaarCapaciteit;
 }
 
-Voertuig::Voertuig(string naam, double totaalCapaciteit)
+Voertuig::Voertuig(std::string naam, double totaalCapaciteit)
 {
 	this->naam = naam;
 	this->totaalCapaciteit = totaalCapaciteit;
