@@ -19,13 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="blowfish.cpp" />
+    <ClCompile Include="Blowfish.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Voertuig.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="blowfish.h" />
+    <ClInclude Include="Blowfish.h" />
     <ClInclude Include="Database.h" />
+    <ClInclude Include="Voertuig.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
