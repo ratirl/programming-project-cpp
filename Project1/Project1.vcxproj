@@ -19,10 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="blowfish.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="blowfish.h" />
     <ClInclude Include="Database.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
