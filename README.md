@@ -1,2 +1,2 @@
 # programming-project-1
-tweede zit ali trabi pp1
+git repository voor tweede zit van programming project 1 
