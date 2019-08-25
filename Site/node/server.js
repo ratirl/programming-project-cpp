@@ -4,16 +4,46 @@ const config = require('./config')
 const path = require('path');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
+var session = require('express-session');
+const router = express.Router();
 const app = express();
 const port = 3000;
 const saltRounds = 10;
+//Session initialiseren met een secret denk ik
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+  }))
 
+  var sess;
 //Page to be redirecten wnr ge localhost:3000 intyped
 //Basically index of homepage
 app.get('/', (req, res) => {
 
     res.sendFile(path.join(__dirname + '/html/help.html'));
+    sess=req.session;
+    /*
+    * Here we have assign the 'session' to 'sess'.
+    * Now we can create any number of session variable we want.
+    * in PHP we do as $_SESSION['var name'].
+    * Here we do like this.
+    */
+    sess.id; // equivalent to $_SESSION['email'] in PHP.
+    sess.type; // equivalent to $_SESSION['username'] in PHP.
 
+});
+
+
+
+
+router.get('/xd',(req,res) => {
+    sess = req.session;
+    if(sess.id) {
+        return res.redirect('/admin');
+    }
+    res.sendFile('index.html');
 });
 
 //Middleware
@@ -38,6 +68,8 @@ const connection = mysql.createConnection({
     database: config.database
 });
 
+
+
 //GET get alle pakketten /soort van api
 //Om alle data in json op te vangen
 app.get('/getPakketten', (req, res) => {
@@ -52,15 +84,15 @@ app.get('/getPakketten', (req, res) => {
     );
 });
 
-//POST register //eventjes form testen
-/* app.get('/register', (req, res) => {
+//POST KLANT REGISTREREN
+ app.post('/registerKlant', (req, res) => {
     console.log('register triggered!');
     console.log(req.body);
 
     bcrypt.hash("admin", saltRounds, function (err, hash) {
         connection.query(
             'INSERT INTO `L9_Login` (email, password, type) VALUES (?, ?, ?)',
-            ["ali.trabi@student.ehb.be", hash, "admin"],
+            [req.body.email, hash, "klant"],
             function (err, results) {
                 console.log(results);
                 console.log(err);
@@ -69,11 +101,35 @@ app.get('/getPakketten', (req, res) => {
     });
 
     res.send('OK');
-}); */
+}); 
+
+//POST KOERIER REGISTREREN
+app.post('/registerKlant', (req, res) => {
+    console.log('register triggered!');
+    console.log(req.body);
+
+    bcrypt.hash("admin", saltRounds, function (err, hash) {
+        connection.query(
+            'INSERT INTO `L9_Login` (email, password, type) VALUES (?, ?, ?)',
+            [req.body.email, hash, "koerier"],
+            function (err, results) {
+                console.log(results);
+                console.log(err);
+            }
+        );
+    });
+
+    res.send('OK');
+}); 
+
+
 
 //POST login checken en doorsturen indien true
 app.post('/checklogin', (req, res) => {
     console.log('login check triggered!');
+
+
+
     connection.query(
         'SELECT `email`, `password`, `type` FROM `L9_Login` WHERE `email` = ?', [req.body.email],
         function (err, results, fields) {
