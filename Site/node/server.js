@@ -9,6 +9,7 @@ const router = express.Router();
 const app = express();
 const port = 3000;
 const saltRounds = 10;
+app.use(express.static('html'));
 //Session initialiseren met een secret denk ik
 app.use(session({
     secret: 'keyboard cat',
@@ -22,7 +23,7 @@ app.use(session({
 //Basically index of homepage
 app.get('/', (req, res) => {
 
-    res.sendFile(path.join(__dirname + '/html/help.html'));
+    res.sendFile(path.join(__dirname + '/html/index.html'));
     sess=req.session;
     /*
     * Here we have assign the 'session' to 'sess'.
