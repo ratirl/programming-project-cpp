@@ -21,22 +21,10 @@
     <ClCompile Include="Database.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Blowfish.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Voertuig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Pakket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DatabaseVoertuig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MenuItems.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DatabasePakket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,25 +32,10 @@
     <ClInclude Include="Database.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Blowfish.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Voertuig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pakket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DatabaseVoertuig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DatabaseHeaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuItems.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DatabasePakket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -40,6 +40,11 @@ std::string Pakket::getGemeente()
 	return gemeente;
 }
 
+int Pakket::getActief()
+{
+	return actief;
+}
+
 std::string Pakket::getStatus()
 {
 	return status;
@@ -60,7 +65,7 @@ int Pakket::getPrioriteit()
 	return prioriteit;
 }
 
-Pakket::Pakket(int id, int voertuigId, int userId, std::string status, std::string opmerking, double capaciteit, int prioriteit, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente)
+Pakket::Pakket(int id, int voertuigId, int userId, std::string status, std::string opmerking, double capaciteit, int prioriteit, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, int actief)
 {
 	this->id = id;
 	this->voertuigId = voertuigId;
@@ -74,6 +79,7 @@ Pakket::Pakket(int id, int voertuigId, int userId, std::string status, std::stri
 	this->straat = straat;
 	this->huisnummer = huisnummer;
 	this->gemeente = gemeente;
+	this->actief = actief;
 }
 
 Pakket::Pakket(int userId, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, int prioriteit, double lengte, double breedte)

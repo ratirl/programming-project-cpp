@@ -1,6 +1,6 @@
 #pragma once
-#include "Database.h"
 #include "Voertuig.h"
+#include "Database.h"
 using namespace mysqlx;
 
 class DatabaseVoertuig {
