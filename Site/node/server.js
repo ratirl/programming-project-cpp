@@ -84,15 +84,48 @@ app.get('/getPakketten', (req, res) => {
     );
 });
 
-//POST KLANT REGISTREREN
- app.post('/registerKlant', (req, res) => {
+
+//GET get alle voertuigen met bijhorende
+//pakketten
+app.get('/getVoertuigen', (req, res) => {
+    connection.query(
+        'SELECT * FROM `L9_Voertuig`',
+        function(err, results, fields) {
+            if(results){
+                console.log(results);
+                res.send(results);
+            }
+        }
+    );
+});
+
+//GET get alle voertuigen met bijhorende
+//pakketten
+app.get('/getPakettenByVoertuigId/:idd', (req, res) => {
+    const xd = req.params.idd;
+    console.log(xd);
+    console.log('manon')
+    connection.query(
+        'SELECT * FROM `L9_Pakket` WHERE `voertuigId` = ?', [xd],
+        function(err, results, fields) {
+            if(results){
+                console.log(results);
+                res.send(results);
+            }
+        }
+    );
+  
+});
+
+
+//POST KLANT OF KOERIER REGISTREREN
+ app.post('/register', (req, res) => {
     console.log('register triggered!');
     console.log(req.body);
-
-    bcrypt.hash("admin", saltRounds, function (err, hash) {
+    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
         connection.query(
             'INSERT INTO `L9_Login` (email, password, type) VALUES (?, ?, ?)',
-            [req.body.email, hash, "klant"],
+            [req.body.email, hash, req.body.type],
             function (err, results) {
                 console.log(results);
                 console.log(err);
@@ -102,34 +135,10 @@ app.get('/getPakketten', (req, res) => {
 
     res.send('OK');
 }); 
-
-//POST KOERIER REGISTREREN
-app.post('/registerKlant', (req, res) => {
-    console.log('register triggered!');
-    console.log(req.body);
-
-    bcrypt.hash("admin", saltRounds, function (err, hash) {
-        connection.query(
-            'INSERT INTO `L9_Login` (email, password, type) VALUES (?, ?, ?)',
-            [req.body.email, hash, "koerier"],
-            function (err, results) {
-                console.log(results);
-                console.log(err);
-            }
-        );
-    });
-
-    res.send('OK');
-}); 
-
-
 
 //POST login checken en doorsturen indien true
 app.post('/checklogin', (req, res) => {
     console.log('login check triggered!');
-
-
-
     connection.query(
         'SELECT `email`, `password`, `type` FROM `L9_Login` WHERE `email` = ?', [req.body.email],
         function (err, results, fields) {
