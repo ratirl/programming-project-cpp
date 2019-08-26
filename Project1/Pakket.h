@@ -7,27 +7,37 @@ class Pakket {
 	//enum Status { magazijn, verwerking, onderweg, geleverd };
 private:
 	int id;
+	int voertuigId;
+	int userId;
+	std::string status;
+	std::string opmerking;
+	double capaciteit;
+	int prioriteit;
 	std::string voornaam;
 	std::string achternaam;
 	std::string straat;
 	int huisnummer;
 	std::string gemeente;
-	std::string status;
-	bool prioriteit;
-	double capaciteit;
 
 public:
 	int getId();
+	int getVoertuigId();
+	int getUserId();
+	std::string getStatus();
+	std::string getOpmerking();
+	double getCapaciteit();
+	int getPrioriteit();
 	std::string getVoornaam();
 	std::string getAchternaam();
 	std::string getStraat();
 	int getHuisnummer();
 	std::string getGemeente();
-	std::string getStatus();
-	bool getPrioriteit();
+
 
 	// constructor met alle members (ga ik wss niet gebruiken)
-	Pakket(int id, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, std::string status, bool prioriteit, double capaciteit);
-	Pakket(std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, bool prioriteit, double lengte, double breedte);
+	Pakket(int id, int voertuigId, int userId, std::string status, std::string opmerking, double capaciteit, int prioriteit, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente);
+
+	//constructor om data in de database op te slaan
+	Pakket(int userId, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, int prioriteit, double lengte, double breedte);
 
 };

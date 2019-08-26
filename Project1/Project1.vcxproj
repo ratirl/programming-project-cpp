@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Blowfish.cpp" />
     <ClCompile Include="Database.cpp" />
+    <ClCompile Include="DatabasePakket.cpp" />
     <ClCompile Include="DatabaseVoertuig.cpp" />
     <ClCompile Include="MenuItems.cpp" />
     <ClCompile Include="Pakket.cpp" />
@@ -31,6 +32,7 @@
     <ClInclude Include="Blowfish.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="DatabaseHeaders.h" />
+    <ClInclude Include="DatabasePakket.h" />
     <ClInclude Include="DatabaseVoertuig.h" />
     <ClInclude Include="MenuItems.h" />
     <ClInclude Include="Pakket.h" />

@@ -5,6 +5,16 @@ int Pakket::getId()
 	return id;
 }
 
+int Pakket::getVoertuigId()
+{
+	return voertuigId;
+}
+
+int Pakket::getUserId()
+{
+	return userId;
+}
+
 std::string Pakket::getVoornaam()
 {
 	return voornaam;
@@ -35,26 +45,40 @@ std::string Pakket::getStatus()
 	return status;
 }
 
-bool Pakket::getPrioriteit()
+std::string Pakket::getOpmerking()
+{
+	return opmerking;
+}
+
+double Pakket::getCapaciteit()
+{
+	return capaciteit;
+}
+
+int Pakket::getPrioriteit()
 {
 	return prioriteit;
 }
 
-Pakket::Pakket(int id, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, std::string status, bool prioriteit, double capaciteit)
+Pakket::Pakket(int id, int voertuigId, int userId, std::string status, std::string opmerking, double capaciteit, int prioriteit, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente)
 {
 	this->id = id;
+	this->voertuigId = voertuigId;
+	this->userId = userId;
+	this->status = status;
+	this->opmerking = opmerking;
+	this->capaciteit = capaciteit;
+	this->prioriteit = prioriteit;
 	this->voornaam = voornaam;
 	this->achternaam = achternaam;
 	this->straat = straat;
 	this->huisnummer = huisnummer;
 	this->gemeente = gemeente;
-	this->status = status;
-	this->prioriteit = prioriteit;
-	this->capaciteit = capaciteit;
 }
 
-Pakket::Pakket(std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, bool prioriteit, double lengte, double breedte)
+Pakket::Pakket(int userId, std::string voornaam, std::string achternaam, std::string straat, int huisnummer, std::string gemeente, int prioriteit, double lengte, double breedte)
 {
+	this->userId = userId;
 	this->voornaam = voornaam;
 	this->achternaam = achternaam;
 	this->straat = straat;
