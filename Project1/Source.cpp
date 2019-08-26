@@ -1,6 +1,6 @@
 #include <iostream>
 #include "blowfish.h"
-#include "DatabaseHeaders.h"
+
 #include "MenuItems.h"
 using namespace std;
 using namespace mysqlx;
@@ -39,24 +39,26 @@ int main()
 	db.addVoertuig("vrachtwagen", 10);
 
 	//begin menu
+	MenuItems menu;
 	int keuze;
 	do {
-		keuze = MenuItems::hoofdMenu();
+		keuze = menu.hoofdMenu();
 		switch (keuze) {
-		case 1: MenuItems::voertuigenInbrengen();
+		case 1: menu.voertuigMenu();
 			break;
-		case 2: MenuItems::bestellingenInbrengen();
+		case 2: menu.bestellingenInbrengen();
 			break;
-		case 3: MenuItems::lijstVoertuigLading();
+		case 3: menu.lijstVoertuigLading();
 			break;
-		case 4: MenuItems::voertuigDetails();
+		case 4: menu.voertuigDetails();
 			break;
-		case 5: MenuItems::statistiekenLijsten();
+		case 5: menu.statistiekenLijsten();
 			break;
-		case 6: MenuItems::pakketDetails();
+		case 6: menu.pakketDetails();
 			break;
 		}
 	} while (keuze != 0);
 
 	return 0;
 }
+

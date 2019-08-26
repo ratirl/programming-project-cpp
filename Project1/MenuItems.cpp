@@ -1,5 +1,8 @@
 #include "MenuItems.h"
 
+//database objecten
+DatabaseVoertuig VOERTUIG;
+
 int MenuItems::hoofdMenu()
 {
 	int keuze;
@@ -24,6 +27,7 @@ int MenuItems::hoofdMenu()
 }
 
 int MenuItems::voertuigenInbrengen() {
+
 	int keuze;
 	do {
 		cout << "    1. voertuig inbrengen" << endl;
@@ -119,5 +123,40 @@ int MenuItems::pakketDetails() {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
 	} while ((keuze < 0) || (keuze > 3));
+	return keuze;
+}
+
+
+
+
+
+int MenuItems::voertuigMenu() {
+	cout << "    | voertuigmenu |    " << endl << endl;
+	int keuze;
+	do {
+		keuze = MenuItems::voertuigenInbrengen();
+		switch (keuze) {
+		case 1: {
+
+			
+			std::string name;
+			double capaciteit;
+			cout << "    geef de naam van de auto in: ";
+			cin >> name;
+			cout << "    geef de capaciteit in in m2: ";
+			cin >> capaciteit;
+			cin.ignore();
+			VOERTUIG.addVoertuig(name, capaciteit);
+		} break;
+
+		case 2: {
+			int id;
+			cout << "    geef de voertuig id: ";
+			cin >> id;
+			VOERTUIG.archieveVoertuig(id);
+		} break;
+		}
+
+	} while (keuze != 0);
 	return keuze;
 }

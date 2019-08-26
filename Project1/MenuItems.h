@@ -1,17 +1,22 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include "DatabaseHeaders.h"
 using namespace std;
 class MenuItems {
 
-
 public:
-	static int hoofdMenu();
-	static int voertuigenInbrengen();
-	static int bestellingenInbrengen();
-	static int lijstVoertuigLading();
-	static int voertuigDetails();
-	static int statistiekenLijsten();
-	static int pakketDetails();
+	//dit zijn de displays vd menu items, bevatten geen
+	//functionaliteit, puur ter weergave vd menu opties
+	int hoofdMenu();
+	int voertuigenInbrengen();
+	int bestellingenInbrengen();
+	int lijstVoertuigLading();
+	int voertuigDetails();
+	int statistiekenLijsten();
+	int pakketDetails();
+
+	//bevatten de logica vd geselecteerde menu optie
+	int voertuigMenu();
 
 };

@@ -13,5 +13,6 @@ public:
 	DatabaseVoertuig();
 	//voertuig toevoegen aan database::basic
 	void addVoertuig(std::string naam, double totaalCapaciteit);
+	void archieveVoertuig(int id);
 
 };
