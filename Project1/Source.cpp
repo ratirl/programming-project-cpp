@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Encryptie.h"
+#include <fstream>
+#include <sstream>
 using namespace std;
 using namespace mysqlx;
 
@@ -28,6 +30,10 @@ const std::string KEY = "Ali_L9_Solo_Carry";
 //functie om elke actie te loggen naar de database
 void log(std::string gebeurtenis);
 
+//functie om een csv bestand met paketten uit te lezen
+//en in de database te stoppen
+void importPakketCsv(std::string bestand);
+
 //menu items
 int hoofdMenu();
 int voertuigMenu();
@@ -37,10 +43,12 @@ int voertuigDetailMenu();
 int statistiekenMenu();
 int pakketDetailMenu();
 int werknemerMakenMenu();
+int importCSVMenu();
 
 
 int main()
 {
+
 	std::string username;
 	std::string password;
 	cout << "    login: " << endl;
@@ -79,6 +87,8 @@ int main()
 			break;
 		case 7: werknemerMakenMenu();
 			break;
+		case 8: importCSVMenu();
+			break;
 		}
 	} while (keuze != 0);
 	msg = "uitgelogt van het systeem";
@@ -90,6 +100,60 @@ int main()
 void log(std::string gebeurtenis)
 {
 	tableLog.insert("name", "text").values(werknemer, gebeurtenis).execute();
+}
+
+void importPakketCsv(std::string bestandsnaam)
+{
+	ifstream bestand(bestandsnaam);
+
+	std::string id;
+	std::string voertuigId;
+	std::string userId;
+	std::string status;
+	std::string opmerking;
+	std::string capaciteit;
+	std::string prioriteit;
+	std::string voornaam;
+	std::string achternaam;
+	std::string straat;
+	std::string huisnummer;
+	std::string gemeente;
+	std::string actief;
+
+
+	while (bestand.good()) {
+
+		getline(bestand, id, ',');
+		getline(bestand, voertuigId, ',');
+		getline(bestand, userId, ',');
+		getline(bestand, status, ',');
+		getline(bestand, opmerking, ',');
+		getline(bestand, capaciteit, ',');
+		getline(bestand, prioriteit, ',');
+		getline(bestand, voornaam, ',');
+		getline(bestand, achternaam, ',');
+		getline(bestand, straat, ',');
+		getline(bestand, huisnummer, ',');
+		getline(bestand, gemeente, ',');
+		getline(bestand, actief, '\n');
+
+		std::cout << "    Id: " << id << '\n';
+		std::cout << "    VoertuigId: " << voertuigId << '\n';
+		std::cout << "    UserId: " << userId << '\n';
+		std::cout << "    Status: " << status << '\n';
+		std::cout << "    Opmerking: " << opmerking << '\n';
+		std::cout << "    Capaciteit: " << capaciteit << '\n';
+		std::cout << "    Prioriteit: " << prioriteit << '\n';
+		std::cout << "    Voornaam: " << voornaam << '\n';
+		std::cout << "    Achternaam: " << achternaam << '\n';
+		std::cout << "    Straat: " << straat << '\n';
+		std::cout << "    Huisnummer: " << huisnummer << '\n';
+		std::cout << "    Gemeente: " << gemeente << '\n';
+		std::cout << "    Actief: " << actief << '\n';
+		std::cout << "    -------------------" << '\n';
+	}
+
+	bestand.close();
 }
 
 //menu items
@@ -105,15 +169,16 @@ int hoofdMenu()
 		cout << "    5. statistieken lijsten" << endl;
 		cout << "    6. detals pakket" << endl;
 		cout << "    7. werknemer toevoegen" << endl;
+		cout << "    8. csv importeren van pakket" << endl;
 		cout << "    0. sluiten" << endl << endl;
 		cout << "    type je keuze in: ";
 		cin >> keuze;
 		cout << endl;
 
-		if ((keuze < 0) || (keuze > 7)) {
+		if ((keuze < 0) || (keuze > 8)) {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
-	} while (((keuze < 0) || (keuze > 7)));
+	} while (((keuze < 0) || (keuze > 8)));
 	return keuze;
 }
 
@@ -223,6 +288,21 @@ int werknemerDetails() {
 	int keuze;
 	do {
 		cout << "    1. maak een nieuwe werknemer" << endl;
+		cout << "    0. terug" << endl;
+		cout << "    type je keuze in: ";
+		cin >> keuze;
+		cout << endl;
+		if ((keuze < 0) || (keuze > 3)) {
+			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
+		}
+	} while ((keuze < 0) || (keuze > 3));
+	return keuze;
+}
+
+int csvDetails() {
+	int keuze;
+	do {
+		cout << "    1. pakket importeren uit csv" << endl;
 		cout << "    0. terug" << endl;
 		cout << "    type je keuze in: ";
 		cin >> keuze;
@@ -629,6 +709,29 @@ int werknemerMakenMenu() {
 		case 1: {
 			encryptie.make_employee();
 			std::string msg = "nieuwe werknemer aangemaakt";
+			log(msg);
+
+		} break;
+		}
+
+	} while (keuze != 0);
+	return keuze;
+}
+
+int importCSVMenu() {
+	cout << "    | csv importeren menu |    " << endl << endl;
+	int keuze;
+	do {
+		keuze = csvDetails();
+		switch (keuze) {
+		case 1: {
+			cout << "    geef aub de bestandsnaam in (bv: invoerbestand.csv):  ";
+			std::string bestandsnaam;
+			cin.ignore();
+			getline(cin, bestandsnaam);
+			importPakketCsv(bestandsnaam);
+
+			std::string msg = "csv pakket geimporteerd";
 			log(msg);
 
 		} break;
