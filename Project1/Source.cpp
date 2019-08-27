@@ -2,8 +2,14 @@
 #include "Encryptie.h"
 #include <fstream>
 #include <sstream>
+#include <iomanip>
+#include <time.h>
+#include <stdio.h>
+#include <windows.h>
+#include <vector>
 using namespace std;
 using namespace mysqlx;
+
 
 //klassen includen
 #include "Voertuig.h"
@@ -32,7 +38,8 @@ void log(std::string gebeurtenis);
 
 //functie om een csv bestand met paketten uit te lezen
 //en in de database te stoppen
-void importPakketCsv(std::string bestand);
+void importPakketCsv(std::string bestandsnaam);
+void exportCsv(std::string bestandsnaam);
 
 //menu items
 int hoofdMenu();
@@ -43,11 +50,12 @@ int voertuigDetailMenu();
 int statistiekenMenu();
 int pakketDetailMenu();
 int werknemerMakenMenu();
-int importCSVMenu();
-
+int csvEnBackupMenu();
+int logsMenu();
 
 int main()
 {
+	exportCsv("testing.csv");
 
 	std::string username;
 	std::string password;
@@ -87,8 +95,11 @@ int main()
 			break;
 		case 7: werknemerMakenMenu();
 			break;
-		case 8: importCSVMenu();
+		case 8: csvEnBackupMenu();
 			break;
+		case 9: logsMenu();
+			break;
+		
 		}
 	} while (keuze != 0);
 	msg = "uitgelogt van het systeem";
@@ -151,9 +162,25 @@ void importPakketCsv(std::string bestandsnaam)
 		std::cout << "    Gemeente: " << gemeente << '\n';
 		std::cout << "    Actief: " << actief << '\n';
 		std::cout << "    -------------------" << '\n';
-	}
 
+		try {
+			tablePakket.insert("id", "voertuigId", "userId", "status", "opmerking", "capaciteit", "prioriteit", "voornaam", "achternaam", "straat", "huisnummer", "gemeente", "actief").values(
+				id, voertuigId, userId, status, opmerking, capaciteit, prioriteit, voornaam, achternaam, straat, huisnummer, gemeente, actief).execute();
+		}
+		catch (mysqlx::Error e) {
+			std::cout << "    " << e.what() << std::endl;
+		}
+		
+	}
 	bestand.close();
+}
+
+void exportCsv(std::string bestandsnaam) {
+	ofstream bestand;
+	bestand.open(bestandsnaam);
+	bestand << 1 << "tamara" << endl;
+	bestand.close();
+
 }
 
 //menu items
@@ -169,16 +196,17 @@ int hoofdMenu()
 		cout << "    5. statistieken lijsten" << endl;
 		cout << "    6. detals pakket" << endl;
 		cout << "    7. werknemer toevoegen" << endl;
-		cout << "    8. csv importeren van pakket" << endl;
+		cout << "    8. csv en backup" << endl;
+		cout << "    9. logs" << endl;
 		cout << "    0. sluiten" << endl << endl;
 		cout << "    type je keuze in: ";
 		cin >> keuze;
 		cout << endl;
 
-		if ((keuze < 0) || (keuze > 8)) {
+		if ((keuze < 0) || (keuze > 9)) {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
-	} while (((keuze < 0) || (keuze > 8)));
+	} while (((keuze < 0) || (keuze > 9)));
 	return keuze;
 }
 
@@ -292,17 +320,19 @@ int werknemerDetails() {
 		cout << "    type je keuze in: ";
 		cin >> keuze;
 		cout << endl;
-		if ((keuze < 0) || (keuze > 3)) {
+		if ((keuze < 0) || (keuze > 1)) {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
-	} while ((keuze < 0) || (keuze > 3));
+	} while ((keuze < 0) || (keuze > 1));
 	return keuze;
 }
 
-int csvDetails() {
+int csvEnBackupDetails() {
 	int keuze;
 	do {
 		cout << "    1. pakket importeren uit csv" << endl;
+		cout << "    2. backup maken" << endl;
+		cout << "    3. backup terugzetten" << endl;
 		cout << "    0. terug" << endl;
 		cout << "    type je keuze in: ";
 		cin >> keuze;
@@ -311,6 +341,21 @@ int csvDetails() {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
 	} while ((keuze < 0) || (keuze > 3));
+	return keuze;
+}
+
+int logDetails() {
+	int keuze;
+	do {
+		cout << "    1. logs bekijken" << endl;
+		cout << "    0. terug" << endl;
+		cout << "    type je keuze in: ";
+		cin >> keuze;
+		cout << endl;
+		if ((keuze < 0) || (keuze > 1)) {
+			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
+		}
+	} while ((keuze < 0) || (keuze > 1));
 	return keuze;
 }
 
@@ -718,11 +763,11 @@ int werknemerMakenMenu() {
 	return keuze;
 }
 
-int importCSVMenu() {
-	cout << "    | csv importeren menu |    " << endl << endl;
+int csvEnBackupMenu() {
+	cout << "    | csv en backup |    " << endl << endl;
 	int keuze;
 	do {
-		keuze = csvDetails();
+		keuze = csvEnBackupDetails();
 		switch (keuze) {
 		case 1: {
 			cout << "    geef aub de bestandsnaam in (bv: invoerbestand.csv):  ";
@@ -735,9 +780,267 @@ int importCSVMenu() {
 			log(msg);
 
 		} break;
+		case 2: {
+			//basically gaan we elke tabel vd database binnenhalen en dan per tabel alle rijen
+			//opslaan in een csv bestand
+			cout << "    de backups worden gemaakt en vind je terug onder de tableNaam met extensie csv:  " << endl;
+			cout << "    dus bv L9_Voertuig.csv " << endl;
+
+			//tabel voertuig
+			ofstream bestand;
+			bestand.open("L9_Voertuig.csv");
+			
+			mysqlx::RowResult result = tableVoertuig.select("*").execute();
+			
+			for (mysqlx::Row row : result.fetchAll()) {
+
+				bestand << row[0] << "," << row[1] << "," << row[2] << "," << row[3] << "," << row[4] << "," << row[5] << endl;
+
+			}
+			bestand.close();
+
+			//tabel pakket
+			ofstream bestand1;
+			bestand1.open("L9_Pakket.csv");
+
+			mysqlx::RowResult result1 = tablePakket.select("*").execute();
+
+			for (mysqlx::Row row : result1.fetchAll()) {
+
+				bestand1 << row[0] << "," << row[1] << "," << row[2] << "," << row[3] << "," << row[4] << "," << row[5] << "," << row[6] << "," << row[7] << "," << row[8] << "," << row[9] << "," << row[10] << "," << row[11] << "," << row[12] << endl;
+
+			}
+			bestand1.close();
+
+			//tabel login
+			ofstream bestand2;
+			bestand2.open("L9_Login.csv");
+			mysqlx::RowResult result2 = tableLogin.select("*").execute();
+
+			for (mysqlx::Row row : result2.fetchAll()) {
+
+				bestand2 << row[0] << "," << row[1] << "," << row[2] << "," << row[3] << endl;
+
+			}
+			bestand2.close();
+
+			//tabel werknemer
+			ofstream bestand3;
+			bestand3.open("L9_Werknemer.csv");
+			mysqlx::RowResult result3 = tableWerknemer.select("*").execute();
+
+			for (mysqlx::Row row : result3.fetchAll()) {
+
+				bestand3 << row[0] << "," << row[1] << "," << row[2] << "," << row[3] << endl;
+
+			}
+			bestand3.close();
+
+			//tabel logs
+			ofstream bestand4;
+			bestand4.open("L9_Log.csv");
+			mysqlx::RowResult result4 = tableLog.select("*").execute();
+
+			for (mysqlx::Row row : result4.fetchAll()) {
+
+				bestand4 << row[0] << "," << row[1] << "," << row[2] << "," << row[3] << endl;
+
+			}
+			bestand4.close();
+			cout << "    alles succesvol gebackuped" << endl;
+			std::string msg = "backup gemaakt/geexporteerd";
+			log(msg);
+
+		} break;
+		case 3: {
+			//voertuig tabel terugzetten
+			ifstream bestand("L9_Voertuig.csv");
+
+			std::string id;
+			std::string naam;
+			std::string status;
+			std::string totaalCapaciteit;
+			std::string beschikbaarCapaciteit;
+			std::string actief;
+
+			while (bestand.good()) {
+
+				getline(bestand, id, ',');
+				getline(bestand, naam, ',');
+				getline(bestand, status, ',');
+				getline(bestand, totaalCapaciteit, ',');
+				getline(bestand, beschikbaarCapaciteit, ',');
+				getline(bestand, actief, '\n');
+
+				try {
+					tableVoertuig.insert("id", "naam", "status", "totaalCapaciteit", "beschikbaarCapaciteit", "actief").values(
+						id, naam, status, totaalCapaciteit, beschikbaarCapaciteit, actief).execute();
+				}
+				//het geeft cdk error op id maar alles werkt zonder problemen
+				catch (mysqlx::Error e) {
+					std::cout << "    " << e.what() << std::endl;
+				}
+
+			} 
+
+
+			//pakket tabel terugzetten
+			ifstream bestand1("L9_Pakket.csv");
+
+			std::string id1;
+			std::string voertuigId;
+			std::string userId;
+			std::string status1;
+			std::string opmerking;
+			std::string capaciteit;
+			std::string prioriteit;
+			std::string voornaam;
+			std::string achternaam;
+			std::string straat;
+			std::string huisnummer;
+			std::string gemeente;
+			std::string actief1;
+
+			while (bestand1.good()) {
+
+				getline(bestand1, id1, ',');
+				getline(bestand1, voertuigId, ',');
+				getline(bestand1, userId, ',');
+				getline(bestand1, status1, ',');
+				getline(bestand1, opmerking, ',');
+				getline(bestand1, capaciteit, ',');
+				getline(bestand1, prioriteit, ',');
+				getline(bestand1, voornaam, ',');
+				getline(bestand1, achternaam, ',');
+				getline(bestand1, straat, ',');
+				getline(bestand1, huisnummer, ',');
+				getline(bestand1, gemeente, ',');
+				getline(bestand1, actief1, '\n');
+
+				try {
+					tablePakket.insert("id", "voertuigId", "userId", "status", "opmerking", "capaciteit", "prioriteit", "voornaam", "achternaam", "straat", "huisnummer", "gemeente", "actief").values(
+						id1, voertuigId, userId, status1, opmerking, capaciteit, prioriteit, voornaam, achternaam, straat, huisnummer, gemeente, actief1).execute();
+				}
+				catch (mysqlx::Error e) {
+					std::cout << "    " << e.what() << std::endl;
+				}
+			}
+
+
+			//login tabel terugzetten
+			ifstream bestand2("L9_Login.csv");
+
+			std::string id2;
+			std::string email;
+			std::string password;
+			std::string type;
+
+
+			while (bestand2.good()) {
+
+				getline(bestand2, id2, ',');
+				getline(bestand2, email, ',');
+				getline(bestand2, password, ',');
+				getline(bestand2, type, '\n');
+
+
+				try {
+					tableLogin.insert("id", "email", "password", "type").values(
+						id2, email, password, type).execute();
+				}
+				catch (mysqlx::Error e) {
+					std::cout << "    " << e.what() << std::endl;
+				}
+
+			}
+
+			//werknemer tabel terugzetten
+			ifstream bestand3("L9_Werknemer.csv");
+
+			std::string id3;
+			std::string user;
+			std::string salt;
+			std::string hash;
+
+
+			while (bestand3.good()) {
+
+				getline(bestand3, id3, ',');
+				getline(bestand3, user, ',');
+				getline(bestand3, salt, ',');
+				getline(bestand3, hash, '\n');
+
+
+				try {
+					tableWerknemer.insert("id", "user", "salt", "hash").values(
+						id3, user, salt, hash).execute();
+				}
+				catch (mysqlx::Error e) {
+					std::cout << "    " << e.what() << std::endl;
+				}
+
+			}
+
+			//log tabel terugzetten
+			ifstream bestand4("L9_Log.csv");
+
+			std::string id4;
+			std::string name;
+			std::string text;
+			std::string datum;
+
+
+			while (bestand4.good()) {
+
+				getline(bestand4, id4, ',');
+				getline(bestand4, name, ',');
+				getline(bestand4, text, ',');
+				getline(bestand4, datum, '\n');
+
+
+				try {
+					tableLog.insert("id", "name", "text", "datum").values(
+						id4, name, text, datum).execute();
+				}
+				catch (mysqlx::Error e) {
+					std::cout << "    " << e.what() << std::endl;
+				}
+			}
+			cout << "    succesvol de backup geimporteerd" << endl;
+			std::string msg = "backup geimporteerd";
+			log(msg);
+
+		} break;
 		}
 
 	} while (keuze != 0);
 	return keuze;
 }
 
+int logsMenu() {
+	cout << "    | logs menu |    " << endl << endl;
+	int keuze;
+	do {
+		keuze = logDetails();
+		switch (keuze) {
+		case 1: {
+			mysqlx::RowResult result = tableLog.select("*").execute();
+			for (mysqlx::Row row : result.fetchAll()) {
+				std::string tijd = row[3];
+				//std::string tijdStr = encryptie.time_t_to_string(tijd);
+				cout << "    LogId: " << row[0] << endl;
+				cout << "    Werknemer: " << row[1] << endl;
+				cout << "    Actie: " << row[2] << endl;
+				cout << "    Datum: " << row[3] << endl;
+				cout << "    _____________________________" << endl;
+
+			}
+			std::string msg = "logs bekeken";
+			log(msg);
+			
+		} break;
+		}
+
+	} while (keuze != 0);
+	return keuze;
+}
