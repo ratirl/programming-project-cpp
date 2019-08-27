@@ -27,6 +27,12 @@
     <ClCompile Include="Pakket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Blowfish.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Encryptie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Database.h">
@@ -36,6 +42,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pakket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Blowfish.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryptie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

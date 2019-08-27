@@ -19,13 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Blowfish.cpp" />
     <ClCompile Include="Database.cpp" />
+    <ClCompile Include="Encryptie.cpp" />
     <ClCompile Include="Pakket.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Voertuig.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Blowfish.h" />
     <ClInclude Include="Database.h" />
+    <ClInclude Include="Encryptie.h" />
     <ClInclude Include="Pakket.h" />
     <ClInclude Include="Voertuig.h" />
   </ItemGroup>

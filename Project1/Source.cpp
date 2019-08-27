@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Database.h"
+#include "Encryptie.h"
 using namespace std;
 using namespace mysqlx;
 
@@ -11,10 +11,22 @@ using namespace mysqlx;
 Session session = Database::getSession();
 Schema schema = session.getSchema("1819IP_groep14");
 
-//alle database tabellen
+//alle database tabellen voor de menu stukken
 Table tableVoertuig = schema.getTable("L9_Voertuig");
 Table tablePakket = schema.getTable("L9_Pakket");
 Table tableLogin = schema.getTable("L9_Login");
+Table tableWerknemer = schema.getTable("L9_Werknemer");
+Table tableLog = schema.getTable("L9_Log");
+
+//encryptie variabele om de functies ervan op te roepen
+Encryptie encryptie;
+
+//de ingelogde werknemer voor de logging
+std::string werknemer;
+const std::string KEY = "Ali_L9_Solo_Carry";
+
+//functie om elke actie te loggen naar de database
+void log(std::string gebeurtenis);
 
 //menu items
 int hoofdMenu();
@@ -24,12 +36,29 @@ int ladingMenu();
 int voertuigDetailMenu();
 int statistiekenMenu();
 int pakketDetailMenu();
+int werknemerMakenMenu();
+
 
 int main()
 {
-	//vooor archiveren
-	//table.update().set("actief", 0).where("id = :param").bind("param", id).execute();
-	//tableVoertuig.insert("naam", "totaalCapaciteit").values("WORKS", 20).execute();
+	std::string username;
+	std::string password;
+	cout << "    login: " << endl;
+	cout << "    geef je username in: ";
+	getline(cin, username);
+	cout << "    geef je password in: ";
+	getline(cin, password);
+	while (!encryptie.checkLogin(username, password)) {
+		cout << "    foute username/ wachtwoord, probeer opnieuw: " << endl;
+		cout << "    geef aub je username in: ";
+		getline(cin, username);
+		cout << "    geef aub je wachtwoord in: ";
+		getline(cin, password);
+	};
+
+	werknemer = encryptie.EMPLOYEE;
+	std::string msg = "aanglogt op het systeem";
+	log(msg);
 
 	//begin menu
 	int keuze;
@@ -48,13 +77,22 @@ int main()
 			break;
 		case 6: pakketDetailMenu();
 			break;
+		case 7: werknemerMakenMenu();
+			break;
 		}
 	} while (keuze != 0);
-
+	msg = "uitgelogt van het systeem";
+	log(msg);
 	//typical return 0; vd main functie
 	return 0;
 }
 
+void log(std::string gebeurtenis)
+{
+	tableLog.insert("name", "text").values(werknemer, gebeurtenis).execute();
+}
+
+//menu items
 int hoofdMenu()
 {
 	int keuze;
@@ -66,15 +104,16 @@ int hoofdMenu()
 		cout << "    4. detals voertuig" << endl;
 		cout << "    5. statistieken lijsten" << endl;
 		cout << "    6. detals pakket" << endl;
+		cout << "    7. werknemer toevoegen" << endl;
 		cout << "    0. sluiten" << endl << endl;
 		cout << "    type je keuze in: ";
 		cin >> keuze;
 		cout << endl;
 
-		if ((keuze < 0) || (keuze > 6)) {
+		if ((keuze < 0) || (keuze > 7)) {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
-	} while (((keuze < 0) || (keuze > 6)));
+	} while (((keuze < 0) || (keuze > 7)));
 	return keuze;
 }
 
@@ -180,6 +219,21 @@ int pakketDetails() {
 	return keuze;
 }
 
+int werknemerDetails() {
+	int keuze;
+	do {
+		cout << "    1. maak een nieuwe werknemer" << endl;
+		cout << "    0. terug" << endl;
+		cout << "    type je keuze in: ";
+		cin >> keuze;
+		cout << endl;
+		if ((keuze < 0) || (keuze > 3)) {
+			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
+		}
+	} while ((keuze < 0) || (keuze > 3));
+	return keuze;
+}
+
 
 int voertuigMenu() {
 	cout << "    | voertuigmenu |    " << endl << endl;
@@ -196,6 +250,8 @@ int voertuigMenu() {
 			cout << "    geef de capaciteit in in m2: ";
 			cin >> capaciteit;
 			tableVoertuig.insert("naam", "totaalCapaciteit", "beschikbaarCapaciteit").values(name, capaciteit, capaciteit).execute();
+			std::string msg = "voertuig " + name + " toegevoegt";
+			log(msg);
 		} break;
 
 		case 2: {
@@ -203,6 +259,8 @@ int voertuigMenu() {
 			cout << "    geef de voertuig id: ";
 			cin >> id;
 			tableVoertuig.update().set("actief", 0).where("id = :param").bind("param", id).execute();
+			std::string msg = "voertuigid " + to_string(id) + " opgezocht";
+			log(msg);
 		} break;
 		}
 
@@ -255,6 +313,8 @@ int pakketMenu() {
 			Pakket p (userId, voornaam, achternaam, straat, huisnummer, gemeente, prioriteit, lengte, breedte);
 			tablePakket.insert("userId", "status", "capaciteit", "prioriteit", "voornaam", "achternaam", "straat", "huisnummer", "gemeente", "actief").values(
 			p.getUserId() , "in magazijn", p.getCapaciteit(), p.getPrioriteit(), p.getVoornaam(), p.getAchternaam(), p.getStraat(), p.getHuisnummer(), p.getGemeente(), 1).execute();
+			std::string msg = "pakket toegevoegt";
+			log(msg);
 		} break;
 
 		case 2: {
@@ -262,6 +322,8 @@ int pakketMenu() {
 			cout << "    geef de paket id: ";
 			cin >> id;
 			tablePakket.update().set("actief", 0).where("id = :param").bind("param", id).execute();
+			std::string msg = "paket " + to_string(id) + " gearchiveerd";
+			log(msg);
 		} break;
 		}
 
@@ -282,6 +344,8 @@ int ladingMenu() {
 			//stap 2: vector ordenen op gemeente 
 			//stap 3: controleren of de beschikbare capaciteit van een voertuig >= de capaciteit vd bovenvermelde set
 			//stap 4: de paketten uit de vector halen en hun status veranderen naar onderweg
+			std::string msg = "voertuigen vullen geklikt";
+			log(msg);
 
 			//stap 0//
 			std::vector<Voertuig> voertuigen;
@@ -339,7 +403,8 @@ int ladingMenu() {
 		} break;
 
 		case 2: { //toon overzicht van elke voertuig met de lading dat ze moeten hebben
-			
+			std::string msg = "voertuig overzicht tonen geklikt";
+			log(msg);
 			vector<Voertuig> voertuigen;
 			mysqlx::RowResult result = tableVoertuig.select("*").where("totaalCapaciteit != beschikbaarCapaciteit").execute();
 			for (mysqlx::Row row : result.fetchAll()) {
@@ -386,6 +451,8 @@ int voertuigDetailMenu() {
 			cout << "    " << "geef de voertuigId in: ";
 			cin >> id;
 			std::string status;
+			std::string msg = "voertuigdetails geklikt van " + to_string(id);
+			log(msg);
 			mysqlx::RowResult res = tableVoertuig.select("status").where("id = :param").bind("param", id).execute();
 			for (mysqlx::Row row : res.fetchAll()) {
 
@@ -419,6 +486,8 @@ int voertuigDetailMenu() {
 			cout << "    geef de nieuwe status ";
 			cin >> status;
 			tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
+			std::string msg = "status gewijzigt van voertuig " + to_string(id) + " naar " + status;
+			log(msg);
 		} break;
 		}
 
@@ -433,6 +502,8 @@ int statistiekenMenu() {
 		keuze = statistiekenLijsten();
 		switch (keuze) {
 		case 1: {
+			std::string msg = "eerste statistiek geklikt";
+			log(msg);
 			//beschikbare klanten ids, eene kiezen
 			mysqlx::RowResult result1 = tableLogin.select("*").where("type = 'klant'").execute();
 			cout << "    beschikbare ids: ";
@@ -455,6 +526,8 @@ int statistiekenMenu() {
 		} break;
 
 		case 2: {
+			std::string msg = "tweede statistiek geklikt";
+			log(msg);
 			//beschikbare gemeenten ids, eene kiezen
 			mysqlx::RowResult result = tablePakket.select("gemeente").execute();
 			cout << "    beschikbare gemeenten: " << endl;
@@ -478,6 +551,8 @@ int statistiekenMenu() {
 		} break;
 
 		case 3: {
+			std::string msg = "derde statistiek geklikt";
+			log(msg);
 			//bgemiddelde capaciteit v/e pakket
 
 			mysqlx::RowResult myResult = tablePakket.select("AVG(capaciteit)").execute();
@@ -507,6 +582,8 @@ int pakketDetailMenu() {
 
 			}
 			int id;
+			std::string msg = "status van paket " + to_string(id) + " opgezocht";
+			log(msg);
 			cout << "    " << "geef de pakketId in: ";
 			cin >> id;
 			std::string status;
@@ -534,9 +611,30 @@ int pakketDetailMenu() {
 			cout << "    geef de nieuwe status bv. In magazijn, In verwerking, Onderweg, Geleverd, …";
 			cin >> status;
 			tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
+			std::string msg = "status van paket " + to_string(id) + " gewijzigt naar " + status;
+			log(msg);
 		} break;
 		}
 
 	} while (keuze != 0);
 	return keuze;
 }
+
+int werknemerMakenMenu() {
+	cout << "    | werknemer creatie menu |    " << endl << endl;
+	int keuze;
+	do {
+		keuze = werknemerDetails();
+		switch (keuze) {
+		case 1: {
+			encryptie.make_employee();
+			std::string msg = "nieuwe werknemer aangemaakt";
+			log(msg);
+
+		} break;
+		}
+
+	} while (keuze != 0);
+	return keuze;
+}
+
