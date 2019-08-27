@@ -34,6 +34,7 @@ public:
 	int getHuisnummer();
 	std::string getGemeente();
 	int getActief();
+	void setStatus(std::string msg);
 
 	
 

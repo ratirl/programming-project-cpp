@@ -45,6 +45,11 @@ int Pakket::getActief()
 	return actief;
 }
 
+void Pakket::setStatus(std::string msg)
+{
+	this->status = msg;
+}
+
 std::string Pakket::getStatus()
 {
 	return status;
