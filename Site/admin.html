@@ -19,7 +19,7 @@
 <body>
     <div class="container">
       <h1>Admin page om klanten en koeriers aan te maken</h1>
-
+      <label id="succesMsg" style="visibility: hidden; color: green;">User succesvol aangemaakt!</label>
       <form id="form_register">
         <div class="form-group">
           <label for="exampleInputEmail1">Email address</label>
@@ -34,13 +34,10 @@
             <label for="exampleInputPassword1">Password again</label>
             <input type="password" class="form-control" id="passwordcontroleinput" placeholder="Password controle">
           </div>
-          <input type="radio" name="gender" value="male"> Klant account<br>
-    <input type="radio" name="gender" value="female"> Koerier account<br><br>
+          <input type="radio" name="type" value="klant" checked> Klant account<br>
+        <input type="radio" name="type" value="koerier"> Koerier account<br><br>
         <button type="submit" class="btn btn-primary">Register</button>
       </form>
-
-
-
     </div>
 </body>
 </html>

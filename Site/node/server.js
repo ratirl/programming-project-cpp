@@ -2,64 +2,12 @@ const express = require('express');
 const mysql = require('mysql2');
 const config = require('./config')
 const path = require('path');
-const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
-var session = require('express-session');
-const router = express.Router();
+const session = require('express-session');
 const app = express();
+const bcrypt = require('bcrypt');
 const port = 3000;
 const saltRounds = 10;
-//Session initialiseren met een secret denk ik
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
-  }))
-
-  var sess;
-//Page to be redirecten wnr ge localhost:3000 intyped
-//Basically index of homepage
-app.get('/', (req, res) => {
-
-    res.sendFile(path.join(__dirname + '/html/help.html'));
-    sess=req.session;
-    /*
-    * Here we have assign the 'session' to 'sess'.
-    * Now we can create any number of session variable we want.
-    * in PHP we do as $_SESSION['var name'].
-    * Here we do like this.
-    */
-    sess.id; // equivalent to $_SESSION['email'] in PHP.
-    sess.type; // equivalent to $_SESSION['username'] in PHP.
-
-});
-
-
-
-
-router.get('/xd',(req,res) => {
-    sess = req.session;
-    if(sess.id) {
-        return res.redirect('/admin');
-    }
-    res.sendFile('index.html');
-});
-
-//Middleware
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
-//Bodyparser
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
-
-app.use(bodyParser.json());
-
 //Connection to database
 const connection = mysql.createConnection({
     host: config.host,
@@ -67,6 +15,52 @@ const connection = mysql.createConnection({
     password: config.password,
     database: config.database
 });
+//Middleware
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+//Bodyparser
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(bodyParser.json());
+
+//Session initialiseren met een secret denk ik
+app.use(session({
+    secret: 'keyboardcat',
+    resave: true,
+    saveUninitialized: true,
+    cookie: { secure: false }
+  }))
+
+
+
+
+
+
+
+
+
+
+
+//Page to be redirecten wnr ge localhost:3000 intyped
+//Basically index of homepage
+app.get('/', (req, res) => {
+    console.log(session.id);
+    console.log('checken of er al iemand is ingelogd in de session');
+    if (req.session.useremail){
+        console.log('SESSION CHECK TRIGGERED HAHAHAHAHAH!');
+        console.log(req.session.useremail);
+        res.redirect('logged');
+    }
+
+    res.sendFile(path.join(__dirname + '/html/help.html'));
+    
+});
+
+
 
 
 
@@ -92,7 +86,7 @@ app.get('/getVoertuigen', (req, res) => {
         'SELECT * FROM `L9_Voertuig`',
         function(err, results, fields) {
             if(results){
-                console.log(results);
+               // console.log(results);
                 res.send(results);
             }
         }
@@ -139,8 +133,10 @@ app.get('/getPakettenByVoertuigId/:idd', (req, res) => {
 //POST login checken en doorsturen indien true
 app.post('/checklogin', (req, res) => {
     console.log('login check triggered!');
+
+  
     connection.query(
-        'SELECT `email`, `password`, `type` FROM `L9_Login` WHERE `email` = ?', [req.body.email],
+        'SELECT `id`,`email`, `password`, `type` FROM `L9_Login` WHERE `email` = ?', [req.body.email],
         function (err, results, fields) {
             if (results.length > 0) { 
             bcrypt.compare(req.body.password, results[0].password, function (err, ress) {
@@ -148,7 +144,18 @@ app.post('/checklogin', (req, res) => {
                     console.log("juiste password");
                     //als we resultaat hebben dan sturen we de type terug om op basis daarvan
                     // naar de juiste inlog pagina te redirecten
-                    res.send(results[0].type);
+                    req.session.userid = results[0].id;
+                    req.session.useremail = results[0].email;
+                    req.session.type = results[0].type;
+                    console.log(req.session.userid);
+                    console.log(req.session.type);
+                    console.log(req.session.useremail);
+                    let loginData = {
+                        id: results[0].id,
+                        type: results[0].type,
+                    };
+
+                    res.send(loginData);
                 } else {
                     console.log("verkeerde password");
                     res.send("fouteLogin");
@@ -156,6 +163,21 @@ app.post('/checklogin', (req, res) => {
             });
         };
         } 
+    );
+});
+
+//GET getPaketten
+app.get('/getPaketten', (req, res) => {
+    console.log('im treiggerd');
+    const idd = req.params.idd;
+    connection.query(
+        'SELECT * FROM `L9_Pakket` WHERE `userId` = ?', [idd],
+        function(err, results, fields) {
+            if(results){
+                 console.log(results);
+                res.send(results);
+            }
+        }
     );
 });
 
