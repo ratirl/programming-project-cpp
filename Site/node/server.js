@@ -134,18 +134,31 @@ app.get('/getPakettenByVoertuigId/:idd', (req, res) => {
  app.post('/register', (req, res) => {
     console.log('register triggered!');
     console.log(req.body);
-    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-        connection.query(
-            'INSERT INTO `L9_Login` (email, password, type) VALUES (?, ?, ?)',
-            [req.body.email, hash, req.body.type],
-            function (err, results) {
-                console.log(results);
-                console.log(err);
-            }
-        );
-    });
+    //kijken of de email al in gebruik is of niet
 
-    res.send('OK');
+    connection.query(
+        'SELECT `*` FROM `L9_Login` WHERE `email` = ?', [req.body.email],
+        function(err, results, fields) {
+            if(results.length){
+                console.log("wtf bestaat die al????");
+                console.log(results);
+                res.send("bestaatAl");
+            }
+            else   bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+                connection.query(
+                    'INSERT INTO `L9_Login` (email, password, type) VALUES (?, ?, ?)',
+                    [req.body.email, hash, req.body.type],
+                    function (err, results) {
+                        console.log(results);
+                        console.log(err);
+                        //no problemos xp
+                        res.send("OK");
+                    }
+                );
+            });
+        }
+    );
+
 }); 
 
 //POST login checken en doorsturen indien true

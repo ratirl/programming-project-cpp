@@ -101,9 +101,16 @@ $(function(){
             data: registerObject
 
         }).done(function (data) {
-         if (data == 'OK'){
+         if (data == 'OK')
+            { $('#succesMsg').html("User succesvol aangemaakt!");
+            $('#succesMsg').css("color", "green");
                 $('#succesMsg').css("visibility", "visible");
+
             }
+            else { $('#succesMsg').html("Gebruiker bestaat al!");
+            $('#succesMsg').css("visibility", "visible");
+            $('#succesMsg').css("color", "red");
+        }
           //  Cookies.set('login_xd', login_id);
            // Cookies.set('login_voornaam', data[0].voornaam);
             console.log('set id to cookie value werkte')
