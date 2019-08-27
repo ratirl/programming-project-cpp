@@ -10,6 +10,13 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
 
+    <style>
+    #map{
+        height: 400px;
+        width: 100%;
+    }
+    </style>
+
 </head>
 
 <body>
@@ -24,9 +31,24 @@
                         
                 </ul>
 
+            <h3>Totaal afstand van alle paketten met google maps api</h3><br>
+            <div id="alleAdressen"> </div>
+            <br>
 
 
     </div>
-</body>
-
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 50.842415, lng: 4.322851},
+          zoom: 8
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCVU3VPTDXfpx_zHGoB5ol6m92PzTW7gFQ&callback=initMap"
+    async defer></script>
+  </body>
 </html>
+View example.

@@ -1,4 +1,27 @@
 $(function(){
+    //https://www.w3schools.com/js/js_cookies.asp
+    function setCookie(cname, cvalue) {
+        var d = new Date();
+        var exdays = 7;
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
     console.log('linked');
     //login ajax call
 
@@ -6,31 +29,10 @@ $(function(){
        check_pw();
     });
 
-    $('#listOfPaketten').hide();
-    getList();
-
+   // $('#listOfPaketten').hide();
+   // getList();
 
     
-    //Retrieves list of books from database using AJAX call
-    function getList(){
-
-        $.ajax({
-            url: 'http://127.0.0.1:3000/getPaketten',
-            method: 'GET',
-            dataType: 'json'
-        }).done(function(data){
-            console.log('DONE');
-            //clean up previous data
-            $('#listOfPaketten').empty();
-            for(let b of data){
-                $('#listOfPaketten').append(`<strong>Titel: </strong> <br>`);
-                $('#x').css("color","red")
-            }
-        }).fail(function(er1, er2){
-            console.log(er1);
-            console.log(er2);
-        });
-    }
 
 
     $('#form_login').submit(function (e) {
@@ -54,11 +56,17 @@ $(function(){
         
             console.log(data);
             if (data.type == 'admin'){
+                setCookie("userId", data.id);
                 window.location.href = "admin.html";
+                
             } else if (data.type == 'koerier'){
+                setCookie("userId", data.id);
                 window.location.href = "koerier.html";
+                
             } else if (data.type == 'klant') {
-                window.location.href = "klant.html/id=" + data.id;
+                setCookie("userId", data.id);
+                window.location.href = "klant.html";
+                setCookie("userId", data.id);
             } else if (data == 'fouteLogin'){
                 $('#errorMsg').css("visibility", "visible");
             }
@@ -173,7 +181,53 @@ $(function(){
         });
     })
 
+//Retrieves list of books from database using AJAX call
+$.ajax({
+    url: 'http://127.0.0.1:3000/getPakettenById/' + getCookie("userId"),
+    method: 'GET',
+    dataType: 'json'
+}).done(function(data){
+    console.log('getPakettenById getriggered op by return van server');
+    //clean up previous data
+    $('#listOfPaketten').empty();
+    for(let b of data){
+        $('#listOfPaketten').append(`
+        <ol>
+            <strong><li id="listItem">Pakket id: ${b.id}</li></strong>
+            <ul>
+                <li><strong style="color:black;">Status:</strong> <strong>${b.status}</strong></li>
+                <li><strong style="color:black;">Capaciteit: </strong> <strong>${b.capaciteit}m2</strong></li>
+                <li><strong style="color:black;">Naam: </strong> <strong>${b.voornaam} ${b.achternaam}</strong></li>
+                <li><strong style="color:black;">Adres: </strong> <strong>${b.straat} ${b.huisnummer} : ${b.gemeente}</strong></li>
+            </ul>
+        
+        </ol>
+        <hr>
+        
+        `);
+    }
+}).fail(function(er1, er2){
+    console.log(er1);
+    console.log(er2);
+});
 
+    
+    //get alle paket adressen vd server
+    $.ajax({
+        url: 'http://127.0.0.1:3000/getAdressen',
+        method: 'GET',
+        dataType: 'json'
+    }).done(function(data){
+        console.log('DONE');
+        for(let b of data){
+            $('#alleAdressen').append(`
+            <p><strong>${b.straat} - ${b.huisnummer} - ${b.gemeente}</p>
+            `);
+        }
+    }).fail(function(er1, er2){
+        console.log(er1);
+        console.log(er2);
+    });
 
        //Form status en opmerking ajax call naar de server
        $('.form_statusEnOpmerking').submit(function (e) {

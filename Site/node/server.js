@@ -8,6 +8,9 @@ const app = express();
 const bcrypt = require('bcrypt');
 const port = 3000;
 const saltRounds = 10;
+const googleMapsClient = require('@google/maps').createClient({
+    key: 'AIzaSyCVU3VPTDXfpx_zHGoB5ol6m92PzTW7gFQ'
+  });
 //Connection to database
 const connection = mysql.createConnection({
     host: config.host,
@@ -55,6 +58,7 @@ app.get('/', (req, res) => {
         console.log(req.session.useremail);
         res.redirect('logged');
     }
+    
 
     res.sendFile(path.join(__dirname + '/html/help.html'));
     
@@ -87,6 +91,20 @@ app.get('/getVoertuigen', (req, res) => {
         function(err, results, fields) {
             if(results){
                // console.log(results);
+                res.send(results);
+            }
+        }
+    );
+});
+
+//GET alle adressen vd paketten
+//
+app.get('/getAdressen', (req, res) => {
+    connection.query(
+        'SELECT `straat`,`huisnummer`, `gemeente` FROM `L9_Pakket` ',
+        function(err, results, fields) {
+            if(results){
+                console.log(results);
                 res.send(results);
             }
         }
@@ -153,6 +171,7 @@ app.post('/checklogin', (req, res) => {
                     let loginData = {
                         id: results[0].id,
                         type: results[0].type,
+                        email: results[0].type,
                     };
 
                     res.send(loginData);
@@ -180,6 +199,31 @@ app.get('/getPaketten', (req, res) => {
         }
     );
 });
+
+//GET paketten by id vd klant
+app.get('/getPakettenById/:idd', (req, res) => {
+    console.log("getPakettenById getriggered");
+    const xd = req.params.idd;
+    connection.query(
+        'SELECT * FROM `L9_Pakket` WHERE `userId` = ?', [xd],
+        function(err, results, fields) {
+            if(results){
+                console.log(results);
+                res.send(results);
+            }
+        }
+    );
+  
+});
+
+googleMapsClient.geocode({
+    address: '1600 Amphitheatre Parkway, Mountain View, CA'
+  }, function(err, response) {
+    if (!err) {
+      console.log(response.json.results);
+    }
+  });
+
 
 
 app.listen(port, () => console.log(

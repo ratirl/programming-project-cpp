@@ -10,6 +10,7 @@
   "author": "Ali Trabi",
   "license": "ISC",
   "dependencies": {
+    "@google/maps": "^0.5.5",
     "bcrypt": "^3.0.6",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
