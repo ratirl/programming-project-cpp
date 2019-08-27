@@ -22,8 +22,8 @@ int voertuigMenu();
 int pakketMenu();
 int ladingMenu();
 int voertuigDetailMenu();
-int statistiekenLijsten();
-int pakketDetails();
+int statistiekenMenu();
+int pakketDetailMenu();
 
 int main()
 {
@@ -44,9 +44,9 @@ int main()
 			break;
 		case 4: voertuigDetailMenu();
 			break;
-		case 5: statistiekenLijsten();
+		case 5: statistiekenMenu();
 			break;
-		case 6: pakketDetails();
+		case 6: pakketDetailMenu();
 			break;
 		}
 	} while (keuze != 0);
@@ -151,14 +151,15 @@ int statistiekenLijsten() {
 	do {
 		cout << "    1. opvragen status van paket x" << endl;
 		cout << "    2. overzicht leveringen per gemeente" << endl;
+		cout << "    3. gemiddelde capaciteit van paketten" << endl;
 		cout << "    0. terug" << endl;
 		cout << "    type je keuze in: ";
 		cin >> keuze;
 		cout << endl;
-		if ((keuze < 0) || (keuze > 2)) {
+		if ((keuze < 0) || (keuze > 3)) {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
-	} while ((keuze < 0) || (keuze > 2));
+	} while ((keuze < 0) || (keuze > 3));
 	return keuze;
 }
 
@@ -220,7 +221,7 @@ int pakketMenu() {
 			cout << "    beschikbare ids: ";
 			for (mysqlx::Row row : result1.fetchAll()) {
 
-				cout << row[0] << ",";
+				cout << row[0] << " - ";
 			
 			}
 			int userId;
@@ -372,17 +373,13 @@ int voertuigDetailMenu() {
 	int keuze;
 	do {
 		keuze = voertuigDetails();
-		cout << "    1. toon status en paketten van voertuig x" << endl; //user geeft id in vd voertuig
-		cout << "    2. editeer status van voertuig x" << endl; //update status vd voertuig
-		cout << "    3. editeer pakket van voertuig x" << endl; //update pakket details vd voertuig
-		cout << "    0. terug" << endl;
 		switch (keuze) {
 		case 1: {
 			mysqlx::RowResult result1 = tableVoertuig.select("*").where("actief = 1").execute();
 			cout << "    beschikbare ids: ";
 			for (mysqlx::Row row : result1.fetchAll()) {
 
-				cout << row[0] << ",";
+				cout << row[0] << " - ";
 
 			}
 			int id;
@@ -408,11 +405,133 @@ int voertuigDetailMenu() {
 		} break;
 
 		case 2: {
+			mysqlx::RowResult result1 = tableVoertuig.select("*").where("actief = 1").execute();
+			cout << "    beschikbare ids: ";
+			for (mysqlx::Row row : result1.fetchAll()) {
+
+				cout << row[0] << " - ";
+
+			}
 			int id;
 			std::string status;
 			cout << "    geef de paket id ";
 			cin >> id;
 			cout << "    geef de nieuwe status ";
+			cin >> status;
+			tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
+		} break;
+		}
+
+	} while (keuze != 0);
+	return keuze;
+}
+
+int statistiekenMenu() {
+	cout << "    | statistiekenmenu |    " << endl << endl;
+	int keuze;
+	do {
+		keuze = statistiekenLijsten();
+		switch (keuze) {
+		case 1: {
+			//beschikbare klanten ids, eene kiezen
+			mysqlx::RowResult result1 = tableLogin.select("*").where("type = 'klant'").execute();
+			cout << "    beschikbare ids: ";
+			for (mysqlx::Row row : result1.fetchAll()) {
+
+				cout << row[0] << " - ";
+
+			}
+			cout << "    geef een id in:  ";
+			int id;
+			cin >> id;
+		
+			mysqlx::RowResult result = tablePakket.select("*").where("userId = :param").bind("param", id).execute();
+			cout << "    alle paketten van klantid " << id << ":" << endl;
+			for (mysqlx::Row row : result.fetchAll()) {
+
+				cout << "    pakket id: " << row[0] << ", " << row[7] << " " << row[8] << " ," << row[9] << " " << row[10] << " "<< row[11] << " " << endl;
+
+			}
+		} break;
+
+		case 2: {
+			//beschikbare gemeenten ids, eene kiezen
+			mysqlx::RowResult result = tablePakket.select("gemeente").execute();
+			cout << "    beschikbare gemeenten: " << endl;
+			for (mysqlx::Row row : result.fetchAll()) {
+
+				cout << "    " << row[0] << endl;
+
+			} 
+			cout << endl;
+			cout << "    geef een gemeente:  ";
+			std::string gemeente;
+			cin >> gemeente;
+
+			mysqlx::RowResult res = tablePakket.select("*").where("gemeente = :param").bind("param", gemeente).execute();
+			for (mysqlx::Row row : res.fetchAll()) {
+
+				cout << "    pakket id: " << row[0] << ", " << row[7] << " " << row[8] << " ," << row[9] << " " << row[10] << " " << row[11] << " " << endl;
+
+			}
+			
+		} break;
+
+		case 3: {
+			//bgemiddelde capaciteit v/e pakket
+
+			mysqlx::RowResult myResult = tablePakket.select("AVG(capaciteit)").execute();
+			for (mysqlx::Row row : myResult.fetchAll()) {
+				cout << "    gemiddelde capaciteit van een pakket bedraagt "<< row[0] << "m2" << endl;
+			}
+
+		} break;
+		}
+
+	} while (keuze != 0);
+	return keuze;
+}
+
+int pakketDetailMenu() {
+	cout << "    | pakketmenu |    " << endl << endl;
+	int keuze;
+	do {
+		keuze = pakketDetails();
+		switch (keuze) {
+		case 1: {
+			mysqlx::RowResult result1 = tablePakket.select("*").where("actief = 1").execute();
+			cout << "    beschikbare ids: ";
+			for (mysqlx::Row row : result1.fetchAll()) {
+
+				cout << row[0] << " - ";
+
+			}
+			int id;
+			cout << "    " << "geef de pakketId in: ";
+			cin >> id;
+			std::string status;
+			mysqlx::RowResult res = tablePakket.select("status").where("id = :param").bind("param", id).execute();
+			for (mysqlx::Row row : res.fetchAll()) {
+
+				cout << "    status ervan is: " << row[0] << endl;
+
+			}
+		
+		} break;
+
+		case 2: {
+			mysqlx::RowResult result1 = tablePakket.select("*").where("actief = 1").execute();
+			cout << "    beschikbare ids: ";
+			for (mysqlx::Row row : result1.fetchAll()) {
+
+				cout << row[0] << " - ";
+
+			}
+			int id;
+			std::string status;
+			cout << "    geef de paket id ";
+			cin >> id;
+			cout << "    geef de nieuwe status bv. In magazijn, In verwerking, Onderweg, Geleverd, …";
 			cin >> status;
 			tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
 		} break;
