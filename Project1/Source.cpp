@@ -282,7 +282,7 @@ int voertuigDetails() {
 int statistiekenLijsten() {
 	int keuze;
 	do {
-		cout << "    1. opvragen status van paket x" << endl;
+		cout << "    1. overzicht leveren van user x" << endl;
 		cout << "    2. overzicht leveringen per gemeente" << endl;
 		cout << "    3. gemiddelde capaciteit van paketten" << endl;
 		cout << "    0. terug" << endl;
@@ -301,15 +301,14 @@ int pakketDetails() {
 	do {
 		cout << "    1. opvragen status van pakket x" << endl;
 		cout << "    2. updaten status van pakket x" << endl;
-		cout << "    3. editeer pakket van voertuig x" << endl;
 		cout << "    0. terug" << endl;
 		cout << "    type je keuze in: ";
 		cin >> keuze;
 		cout << endl;
-		if ((keuze < 0) || (keuze > 3)) {
+		if ((keuze < 0) || (keuze > 2)) {
 			cout << "    ongeldige invoer, kies openieuw." << endl << endl;
 		}
-	} while ((keuze < 0) || (keuze > 3));
+	} while ((keuze < 0) || (keuze > 2));
 	return keuze;
 }
 
@@ -416,7 +415,7 @@ int pakketMenu() {
 		keuze = bestellingenInbrengen();
 		switch (keuze) {
 		case 1: {
-			mysqlx::RowResult result1 = tableLogin.select("*").where("actief = 1").execute();
+			mysqlx::RowResult result1 = tableLogin.select("*").where("type = 'klant'").execute();
 			cout << "    beschikbare ids: ";
 			for (mysqlx::Row row : result1.fetchAll()) {
 
@@ -754,10 +753,11 @@ int pakketDetailMenu() {
 
 			}
 			int id;
+			cin >> id;
 			std::string msg = "status van paket " + to_string(id) + " opgezocht";
 			log(msg);
 			cout << "    " << "geef de pakketId in: ";
-			cin >> id;
+			
 			std::string status;
 			mysqlx::RowResult res = tablePakket.select("status").where("id = :param").bind("param", id).execute();
 			for (mysqlx::Row row : res.fetchAll()) {
@@ -777,11 +777,14 @@ int pakketDetailMenu() {
 
 			}
 			int id;
+			
 			std::string status;
 			cout << "    geef de paket id ";
 			cin >> id;
-			cout << "    geef de nieuwe status bv. In magazijn, In verwerking, Onderweg, Geleverd, …";
-			cin >> status;
+			cin.ignore();
+			
+			cout << "    geef de nieuwe status bv. In magazijn, In verwerking, Onderweg, Geleverd: ";
+			getline(cin, status);
 
 			try {
 				tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
