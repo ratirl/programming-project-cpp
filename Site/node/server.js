@@ -114,11 +114,11 @@ app.get('/getAdressen', (req, res) => {
 //GET get alle voertuigen met bijhorende
 //pakketten
 app.get('/getPakettenByVoertuigId/:idd', (req, res) => {
-    const xd = req.params.idd;
-    console.log(xd);
+    const idVanUrl = req.params.idd;
+    console.log(idVanUrl);
     console.log('manon')
     connection.query(
-        'SELECT * FROM `L9_Pakket` WHERE `voertuigId` = ?', [xd],
+        'SELECT * FROM `L9_Pakket` WHERE `voertuigId` = ?', [idVanUrl],
         function(err, results, fields) {
             if(results){
                 console.log(results);
@@ -227,6 +227,23 @@ app.get('/getPakettenById/:idd', (req, res) => {
         }
     );
   
+});
+
+//POST insertOpmerking
+app.post('/insertOpmerking', (req, res) => {
+    console.log('insert triggered!');
+    console.log(req.body);
+
+    connection.query(
+        'UPDATE L9_Pakket SET status = ? ,opmerking = ? WHERE `id` = ?',
+        [req.body.status, req.body.text, req.body.id],
+        function(err, results){
+            console.log(results);
+            console.log(err);
+        }
+    );
+    res.send('OK');
+
 });
 
 googleMapsClient.geocode({

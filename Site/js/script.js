@@ -29,10 +29,6 @@ $(function(){
        check_pw();
     });
 
-   // $('#listOfPaketten').hide();
-   // getList();
-
-    
 
 
     $('#form_login').submit(function (e) {
@@ -123,13 +119,31 @@ $(function(){
     });
 
 
-    //Register ajax call naar server
+    //Status wijzigen en of opmerking toevoegen aan een pakket
+    $(document).on("submit", '.form_Opm', function (e) {
+        e.preventDefault();
+        let opmerkingObject = {
+            id: this.id,
+            status: $('#boxStatus').val(),
+            text: $('#opmerkingTxt').val()
+        };
+        console.log(opmerkingObject);
 
-    //$(document).on("click", '.form_statusEnOpmerking', function () {
-    //    console.log(this.id);
-     //   var str = '#voertuig'+this.id;
-     //   console.log(str);
-   // });
+        //Call to server
+        $.ajax({
+            url: 'http://127.0.0.1:3000/insertOpmerking',
+            method: 'POST',
+            data: opmerkingObject
+
+        }).done(function(data){
+            console.log('opmerking en status inserted!');
+
+
+        }).fail(function(er1, er2){
+            console.log(er1);
+            console.log(er2);
+        });
+    });
 
 
 
@@ -164,23 +178,26 @@ $(function(){
             console.log('DONE???');
             for(let b of data){
                 
-                $(str).append(`<ul><li id="${b.id}"><strong>PakketId: ${b.id} - Status: ${b.status} - Opmerking: ${b.opmerking}  </strong> <form class="form_statusEnOpmerking">
-                Status<br>
-                <select>
-                    <option value="mag">In magazijn</option>
-                    <option value="ver">In verwerking</option>
-                    <option value="mond">Onderweg</option>
-                    <option value="bez">Bezorgt</option>
+                $(str).append(`
+                <form id="${b.id}"; class="form_Opm"><ul>
+                <li id="${b.id}"><strong>PakketId: ${b.id} - Status: ${b.status} - Opmerking: ${b.opmerking}  </strong> 
+                <br>Status<br>
+                <select id="boxStatus";>
+                    <option value="in magazijn">In magazijn</option>
+                    <option value="in verwerking">In verwerking</option>
+                    <option value="onderwerg">Onderweg</option>
+                    <option value="bezorgt">Bezorgt</option>
                 </select>
                 <br>
                 Opmerking:<br>
-                <input type="text" name="opmerking">
+                <input id="opmerkingTxt"; type="text" name="opmerking">
                 <br><br>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form> </li></ul><br>
+                <button type="submit" class="btn btn-dark">Submit</button>
+                 </li></ul></form><br>
                 
                 
                 `);
+                
             }
         }).fail(function(er1, er2){
             console.log(er1);
@@ -235,41 +252,6 @@ $.ajax({
         console.log(er1);
         console.log(er2);
     });
-
-       //Form status en opmerking ajax call naar de server
-       $('.form_statusEnOpmerking').submit(function (e) {
-        console.log('rwaarom triggered dit niet')
-        //standard behaviour block
-        e.preventDefault();
-
-        //data terug krijgen vd form met jquery
-        let registerObject = {
-            email: $('#emailinput').val(),
-            password: $('#passwordinput').val(),
-            type: $("input[name='type']:checked").val()
-        };
-        console.log(registerObject);
-        //Call to server
-        $.ajax({
-            url: 'http://127.0.0.1:3000/register',
-            method: 'POST',
-            data: registerObject
-
-        }).done(function (data) {
-         if (data == 'OK'){
-                $('#succesMsg').css("visibility", "visible");
-            }
-          //  Cookies.set('login_xd', login_id);
-           // Cookies.set('login_voornaam', data[0].voornaam);
-            console.log('set id to cookie value werkte')
-
-
-        }).fail(function (er1, er2) {
-            console.log(er1);
-            console.log(er2);
-        });
-    });
-
 
 
     function check_pw() {
