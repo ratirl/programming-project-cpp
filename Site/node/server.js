@@ -184,7 +184,7 @@ app.post('/checklogin', (req, res) => {
                     let loginData = {
                         id: results[0].id,
                         type: results[0].type,
-                        email: results[0].type,
+                        email: results[0].email,
                     };
 
                     res.send(loginData);

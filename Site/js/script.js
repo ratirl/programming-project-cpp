@@ -1,4 +1,5 @@
 $(function(){
+
     //https://www.w3schools.com/js/js_cookies.asp
     function setCookie(cname, cvalue) {
         var d = new Date();
@@ -24,6 +25,14 @@ $(function(){
       }
     console.log('linked');
     //login ajax call
+
+
+
+   
+
+
+
+
 
     $('#form_register').click(function(){
        check_pw();
@@ -53,16 +62,22 @@ $(function(){
             console.log(data);
             if (data.type == 'admin'){
                 setCookie("userId", data.id);
+                setCookie("userType", data.type);
+                setCookie("userEmail", data.email);
                 window.location.href = "admin.html";
                 
             } else if (data.type == 'koerier'){
                 setCookie("userId", data.id);
+                setCookie("userType", data.type);
+                setCookie("userEmail", data.email);
                 window.location.href = "koerier.html";
                 
             } else if (data.type == 'klant') {
                 setCookie("userId", data.id);
+                setCookie("userType", data.type);
+                setCookie("userEmail", data.email);
                 window.location.href = "klant.html";
-                setCookie("userId", data.id);
+      
             } else if (data == 'fouteLogin'){
                 $('#errorMsg').css("visibility", "visible");
             }
