@@ -16,6 +16,7 @@ using namespace mysqlx;
 #include "Pakket.h"
 
 //globale session variabele
+
 Session session = Database::getSession();
 Schema schema = session.getSchema("1819IP_groep14");
 
@@ -374,7 +375,14 @@ int voertuigMenu() {
 			cin >> name;
 			cout << "    geef de capaciteit in in m2: ";
 			cin >> capaciteit;
-			tableVoertuig.insert("naam", "totaalCapaciteit", "beschikbaarCapaciteit").values(name, capaciteit, capaciteit).execute();
+			try {
+
+				tableVoertuig.insert("naam", "totaalCapaciteit", "beschikbaarCapaciteit").values(name, capaciteit, capaciteit).execute();
+			}
+			catch (mysqlx::Error e) {
+				std::cout << "    " << e.what() << std::endl;
+			}
+			
 			std::string msg = "voertuig " + name + " toegevoegt";
 			log(msg);
 		} break;
@@ -383,7 +391,15 @@ int voertuigMenu() {
 			int id;
 			cout << "    geef de voertuig id: ";
 			cin >> id;
-			tableVoertuig.update().set("actief", 0).where("id = :param").bind("param", id).execute();
+			try {
+
+				tableVoertuig.update().set("actief", 0).where("id = :param").bind("param", id).execute();
+			}
+			catch (mysqlx::Error e) {
+				std::cout << "    " << e.what() << std::endl;
+			}
+
+			
 			std::string msg = "voertuigid " + to_string(id) + " opgezocht";
 			log(msg);
 		} break;
@@ -436,8 +452,16 @@ int pakketMenu() {
 			cout << "    geef breedte vd pakket: m2 ";
 			cin >> breedte;
 			Pakket p (userId, voornaam, achternaam, straat, huisnummer, gemeente, prioriteit, lengte, breedte);
-			tablePakket.insert("userId", "status", "capaciteit", "prioriteit", "voornaam", "achternaam", "straat", "huisnummer", "gemeente", "actief").values(
-			p.getUserId() , "in magazijn", p.getCapaciteit(), p.getPrioriteit(), p.getVoornaam(), p.getAchternaam(), p.getStraat(), p.getHuisnummer(), p.getGemeente(), 1).execute();
+
+			try {
+				tablePakket.insert("userId", "status", "capaciteit", "prioriteit", "voornaam", "achternaam", "straat", "huisnummer", "gemeente", "actief").values(
+					p.getUserId(), "in magazijn", p.getCapaciteit(), p.getPrioriteit(), p.getVoornaam(), p.getAchternaam(), p.getStraat(), p.getHuisnummer(), p.getGemeente(), 1).execute();
+
+			}
+			catch (mysqlx::Error e) {
+				std::cout << "    " << e.what() << std::endl;
+			}
+		
 			std::string msg = "pakket toegevoegt";
 			log(msg);
 		} break;
@@ -446,7 +470,15 @@ int pakketMenu() {
 			int id;
 			cout << "    geef de paket id: ";
 			cin >> id;
-			tablePakket.update().set("actief", 0).where("id = :param").bind("param", id).execute();
+
+			try {
+				tablePakket.update().set("actief", 0).where("id = :param").bind("param", id).execute();
+
+			}
+			catch (mysqlx::Error e) {
+				std::cout << "    " << e.what() << std::endl;
+			}
+			
 			std::string msg = "paket " + to_string(id) + " gearchiveerd";
 			log(msg);
 		} break;
@@ -508,7 +540,14 @@ int ladingMenu() {
 					if (voertuigen[i].getBeschikbaarCapaciteit() < q[j].getCapaciteit()) {
 						cout << "deze voertuig heeft geen plaats meer," << endl;
 						cout << "we beginnen met de volgende voertuig te vullen";
-						tableVoertuig.update().set("status", "onderweg").where("id = :param").bind("param", voertuigen[i].getId()).execute();
+						try {
+
+							tableVoertuig.update().set("status", "onderweg").where("id = :param").bind("param", voertuigen[i].getId()).execute();
+						}
+						catch (mysqlx::Error e) {
+							std::cout << "    " << e.what() << std::endl;
+						}
+						
 					}
 					//in dit geval heeft de voertuig dus wel nog plaats dus gaan we de pakket erin steken
 					else {
@@ -610,7 +649,15 @@ int voertuigDetailMenu() {
 			cin >> id;
 			cout << "    geef de nieuwe status ";
 			cin >> status;
-			tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
+
+			try {
+				tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
+
+			}
+			catch (mysqlx::Error e) {
+				std::cout << "    " << e.what() << std::endl;
+			}
+			
 			std::string msg = "status gewijzigt van voertuig " + to_string(id) + " naar " + status;
 			log(msg);
 		} break;
@@ -735,7 +782,15 @@ int pakketDetailMenu() {
 			cin >> id;
 			cout << "    geef de nieuwe status bv. In magazijn, In verwerking, Onderweg, Geleverd, …";
 			cin >> status;
-			tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
+
+			try {
+				tablePakket.update().set("status", status).where("id = :param").bind("param", id).execute();
+
+			}
+			catch (mysqlx::Error e) {
+				std::cout << "    " << e.what() << std::endl;
+			}
+	
 			std::string msg = "status van paket " + to_string(id) + " gewijzigt naar " + status;
 			log(msg);
 		} break;
@@ -752,7 +807,14 @@ int werknemerMakenMenu() {
 		keuze = werknemerDetails();
 		switch (keuze) {
 		case 1: {
-			encryptie.make_employee();
+			try {
+				encryptie.make_employee();
+
+			}
+			catch (mysqlx::Error e) {
+				std::cout << "    " << e.what() << std::endl;
+			}
+			
 			std::string msg = "nieuwe werknemer aangemaakt";
 			log(msg);
 
