@@ -1,2 +1,2 @@
-# programming-project-1
-git repository voor tweede zit van programming project 1 
+# programming-project-cpp
+git repository voor van programming project cpp
